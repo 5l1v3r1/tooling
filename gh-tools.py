@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Some tools for managing multiple repos on GitHub."""
 
 import click
