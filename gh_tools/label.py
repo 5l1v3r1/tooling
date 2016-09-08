@@ -30,5 +30,27 @@ def unset_label(ctx):
     ghm.exclude = ctx.obj['exclude']
     ghm.unset_label(ctx.obj['name'])
 
+
+@click.command()
+@click.argument('new_name')
+@click.pass_context
+def rename(ctx, new_name):
+    """Deal with setting labels."""
+    ghm = GitHubMux(ctx.obj['organization'], ctx.obj['token'])
+    ghm.exclude = ctx.obj['exclude']
+    ghm.rename_label(ctx.obj['name'], new_name)
+
+
+@click.command()
+@click.argument('repo')
+@click.pass_context
+def synch_labels(ctx, repo):
+    """Synch all the repos' labels using the specified repo as the source of truth."""
+    ghm = GitHubMux(ctx.obj['organization'], ctx.obj['token'])
+    ghm.exclude = ctx.obj['exclude']
+    ghm.synch_from_repo(repo)
+
+
 label.add_command(set_label, name="set")
 label.add_command(unset_label, name="unset")
+label.add_command(rename)

@@ -29,6 +29,7 @@ def cli(ctx, debug, organization, token, exclude):
     ctx.obj['exclude'] = exclude
 
 cli.add_command(label.label)
+cli.add_command(label.synch_labels)
 
 if __name__ == '__main__':
     cli(obj={})
