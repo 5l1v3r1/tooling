@@ -14,14 +14,14 @@ class GitHubMux:
         self.token = token
         self.gh = Github(self.token)
         try:
-            self.organization = self.gh.get_organization(organization)
+            self.org = self.gh.get_organization(organization)
         except UnknownObjectException:
             raise Exception("Looks like organization `{}` doesn't exist.".format(organization))
         self.exclude = []
 
     def repos(self):
         """Return repos to process."""
-        for repo in self.organization.get_repos():
+        for repo in self.org.get_repos():
             if repo.name in self.exclude:
                 click.secho("Skipping repo `{}`.".format(repo.name), fg="blue")
             else:
@@ -106,7 +106,7 @@ class GitHubMux:
         Args:
             repo(str): Repo name of the repo that holds the truth.
         """
-        repo = self.organization.get_repo(repo)
+        repo = self.org.get_repo(repo)
 
         orig_labels = self._extract_label_info(repo)
 
@@ -126,3 +126,65 @@ class GitHubMux:
 
             for l_tuple in to_delete:
                 self._unset_label_repo(r, l_tuple[0])
+
+    def search_issue_by_title(self, title, org, repo):
+        """Search for an issue with `title` in org/repo."""
+        query = "{} in:Title repo:{}/{}".format(title, org, repo)
+        issues = self.gh.search_issues(query)
+
+        count = 0
+        i = None
+        for i in issues:
+            if count:
+                raise Exception("Found too many issues, please make sure the title is unique")
+            count += 1
+        return i
+
+    def move_issue(self, issue_id, src_repo, dst_repo):
+        """Given an issue ID, moves it from src_repo to dst_repo."""
+        src_repo = self.org.get_repo(src_repo)
+        dst_repo = self.org.get_repo(dst_repo)
+
+        issue = src_repo.get_issue(issue_id)
+
+        new_body = "Original issue {}/{}#{} created by @{}\n\n{}".format(
+                                                            src_repo.organization.name,
+                                                            src_repo.name,
+                                                            issue.number,
+                                                            issue.user.login,
+                                                            issue.body)
+
+        issue.edit(state="closed")
+        new_issue = dst_repo.create_issue(title=issue.title, body=new_body, labels=issue.labels)
+        click.echo("Issue moved, new ID is #{} - {}".format(new_issue.id, new_issue.url),
+                   fg="yellow")
+
+    def spread_issue(self, issue):
+        """
+        Spread an issue to multiple repos.
+
+        Given a issue_id from a source repo it will create issues in the rest of the repos
+        linking back to the original one.
+        """
+        self.exclude = self.exclude + (issue.repository.name, )
+        body = "See details in the parent issue {}/{}#{}\n\n".format(
+                                                            issue.repository.organization.name,
+                                                            issue.repository.name,
+                                                            issue.number)
+        for repo in self.repos():
+            new_issue = self.search_issue_by_title(issue.title, repo.organization.name, repo.name)
+            if new_issue:
+                click.secho("Issue already exists, ID is {}/{}#{} - {}".format(
+                                                             new_issue.repository.organization.name,
+                                                             new_issue.repository.name,
+                                                             new_issue.number,
+                                                             new_issue.url),
+                            fg="green")
+            else:
+                new_issue = repo.create_issue(title=issue.title, body=body, labels=issue.labels)
+                click.secho("Issue created, ID is {}/{}#{} - {}".format(
+                                                             new_issue.repository.organization.name,
+                                                             new_issue.repository.name,
+                                                             new_issue.number,
+                                                             new_issue.url),
+                            fg="yellow")
