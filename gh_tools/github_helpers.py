@@ -24,7 +24,6 @@ class GitHubMux:
             self.org = self.gh.get_organization(organization)
         except UnknownObjectException:
             raise Exception("Looks like organization `{}` doesn't exist.".format(organization))
-        self.exclude = []
 
     def exclude_repo(self, repo):
         """
