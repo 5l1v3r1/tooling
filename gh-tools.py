@@ -11,11 +11,18 @@ from gh_tools import issue
 EXCLUDE = ['napalm', 'napalm-salt', 'napalm-ansible', 'napalm-skeleton', 'iosxr-ez', 'tooling']
 
 
+def validate_token(ctx, param, value):
+    """Validate that there is a token."""
+    if not value:
+        raise click.BadParameter('Either pass a token or set the env variable GITHUB_TOKEN')
+    return value
+
+
 @click.group()
 @click.option('--debug/--no-debug', default=False)
 @click.option('--organization', default="napalm-automation",
               help="Which org you want to operate on. Defaults to 'napalm-automation'")
-@click.option('--token', default=os.getenv("GITHUB_TOKEN"),
+@click.option('--token', default=os.getenv("GITHUB_TOKEN"), callback=validate_token,
               help="GitHub Token. Defaults to env variable 'GITHUB_TOKEN'")
 @click.option('--exclude', '-e', multiple=True,
               default=EXCLUDE,
@@ -26,8 +33,9 @@ def cli(ctx, debug, organization, token, exclude):
     """Main entry point."""
     ctx.obj['DEBUG'] = debug
     ctx.obj['organization'] = organization
-    ctx.obj['token'] = token
     ctx.obj['exclude'] = exclude
+    ctx.obj['token'] = token
+
 
 cli.add_command(label.label)
 cli.add_command(label.synch_labels)
