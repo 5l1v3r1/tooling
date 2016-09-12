@@ -6,6 +6,39 @@ Some useful tools to manage the project
 
 Tool that allows you to easily operate on a multi-repo project.
 
+### Spreading issues
+
+```
+(napalm-tooling) ➜  tooling git:(master) ✗ ./gh-tools.py issue 000 spread --help
+Usage: gh-tools.py issue spread [OPTIONS] SOURCE_REPO
+
+  Spread an issue with ISSUE_ID from SOURCE_REPO to the rest of the repos.
+
+Options:
+  --help  Show this message and exit.
+
+(napalm-tooling) ➜  tooling git:(master) ./gh-tools.py issue 70 spread napalm-base
+Skipping repo `napalm`.
+Skipping repo `napalm-ansible`.
+Skipping repo `napalm-base`.
+Issue created, ID is napalm-automation/napalm-eos#39 - https://api.github.com/repos/napalm-automation/napalm-eos/issues/39
+Issue created, ID is napalm-automation/napalm-junos#41 - https://api.github.com/repos/napalm-automation/napalm-junos/issues/41
+Issue created, ID is napalm-automation/napalm-ios#35 - https://api.github.com/repos/napalm-automation/napalm-ios/issues/35
+Issue created, ID is napalm-automation/napalm-iosxr#40 - https://api.github.com/repos/napalm-automation/napalm-iosxr/issues/40
+Issue created, ID is napalm-automation/napalm-fortios#7 - https://api.github.com/repos/napalm-automation/napalm-fortios/issues/7
+Issue created, ID is napalm-automation/napalm-pluribus#15 - https://api.github.com/repos/napalm-automation/napalm-pluribus/issues/15
+Issue created, ID is napalm-automation/napalm-nxos#25 - https://api.github.com/repos/napalm-automation/napalm-nxos/issues/25
+Issue created, ID is napalm-automation/napalm-ibm#4 - https://api.github.com/repos/napalm-automation/napalm-ibm/issues/4
+Skipping repo `napalm-salt`.
+Skipping repo `napalm-skeleton`.
+Issue created, ID is napalm-automation/napalm-panos#8 - https://api.github.com/repos/napalm-automation/napalm-panos/issues/8
+Issue created, ID is napalm-automation/napalm-ros#8 - https://api.github.com/repos/napalm-automation/napalm-ros/issues/8
+Issue created, ID is napalm-automation/napalm-snmp#4 - https://api.github.com/repos/napalm-automation/napalm-snmp/issues/4
+Issue created, ID is napalm-automation/napalm-iosxr-rpc#3 - https://api.github.com/repos/napalm-automation/napalm-iosxr-rpc/issues/3
+Skipping repo `iosxr-ez`.
+Skipping repo `tooling`.
+```
+
 ### Moving issues
 
 ```
