@@ -6,17 +6,36 @@ Some useful tools to manage the project
 
 Tool that allows you to easily operate on a multi-repo project.
 
+### Synching labels
+
+```
+(napalm-tooling) ➜  tooling git:(master) ./gh-tools.py synch_labels napalm-base
+Skipping repo `napalm`.
+Skipping repo `napalm-ansible`.
+Processing napalm-eos
+Processing napalm-junos
+Processing napalm-ios
+Label `enhancement` exists in repo `napalm-ios`. Deleting.
+Processing napalm-iosxr
+Processing napalm-fortios
+Label `fortios` exists in repo `napalm-fortios`. Deleting.
+Processing napalm-pluribus
+Processing napalm-nxos
+Processing napalm-ibm
+Skipping repo `napalm-salt`.
+Skipping repo `napalm-skeleton`.
+Processing napalm-panos
+Processing napalm-ros
+Processing napalm-snmp
+Processing napalm-iosxr-rpc
+Skipping repo `iosxr-ez`.
+Skipping repo `tooling`.
+(napalm-tooling) ➜  tooling git:(master) vagrant ssh ios
+```
+
 ### Spreading issues
 
 ```
-(napalm-tooling) ➜  tooling git:(master) ✗ ./gh-tools.py issue 000 spread --help
-Usage: gh-tools.py issue spread [OPTIONS] SOURCE_REPO
-
-  Spread an issue with ISSUE_ID from SOURCE_REPO to the rest of the repos.
-
-Options:
-  --help  Show this message and exit.
-
 (napalm-tooling) ➜  tooling git:(master) ./gh-tools.py issue 70 spread napalm-base
 Skipping repo `napalm`.
 Skipping repo `napalm-ansible`.
@@ -42,13 +61,6 @@ Skipping repo `tooling`.
 ### Moving issues
 
 ```
-(napalm-tooling) ➜  tooling git:(master) ✗ ./gh-tools.py issue 000 move --help
-Usage: gh-tools.py issue move [OPTIONS] SOURCE_REPO DEST_REPO
-
-  Move an issue with ISSUE_ID from SOURCE_REPO to DEST_REPO.
-
-  Options:
-    --help  Show this message and exit.
 (napalm-tooling) ➜  tooling git:(master) ✗ ./gh-tools.py issue 215 move napalm napalm-ios
 Issue moved, new ID is #176173635 - https://api.github.com/repos/napalm-automation/napalm-ios/issues/27
 ```
