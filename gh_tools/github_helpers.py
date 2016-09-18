@@ -1,4 +1,6 @@
 """Some useful functions to deal with GitHub."""
+import datetime
+import json
 
 from github import Github
 from github import UnknownObjectException
@@ -276,3 +278,58 @@ class GitHubMux:
                                                              new_issue.number,
                                                              new_issue.url),
                             fg="yellow")
+
+    def stats(self, days):
+        """Gather stats for the past few days."""
+        stats = {}
+        summary_user = {}
+        summary_repo = {}
+
+        for repo in self.repos():
+            stats[repo.name] = {}
+            summary_repo[repo.name] = {
+                 "count": 0,
+                 "commits": 0,
+                 "additions": 0,
+                 "deletions": 0,
+            }
+            for pr in repo.get_pulls(state="all", sort="created", direction="desc"):
+                if pr.created_at < (datetime.datetime.now() - datetime.timedelta(days=days)):
+                    break
+
+                summary_repo[repo.name]["count"] += 1
+                summary_repo[repo.name]["commits"] += pr.commits
+                summary_repo[repo.name]["additions"] += pr.additions
+                summary_repo[repo.name]["deletions"] += pr.deletions
+
+                if pr.user.login not in stats[repo.name]:
+                    stats[repo.name][pr.user.login] = {
+                        "count": 1,
+                        "commits": pr.commits,
+                        "additions": pr.additions,
+                        "deletions": pr.deletions,
+                    }
+                else:
+                    stats[repo.name][pr.user.login]["count"] += 1
+                    stats[repo.name][pr.user.login]["commits"] += pr.commits
+                    stats[repo.name][pr.user.login]["additions"] += pr.additions
+                    stats[repo.name][pr.user.login]["deletions"] += pr.deletions
+
+                if pr.user.login not in summary_user:
+                    summary_user[pr.user.login] = {
+                        "count": 1,
+                        "commits": pr.commits,
+                        "additions": pr.additions,
+                        "deletions": pr.deletions,
+                    }
+                else:
+                    summary_user[pr.user.login]["count"] += 1
+                    summary_user[pr.user.login]["commits"] += pr.commits
+                    summary_user[pr.user.login]["additions"] += pr.additions
+                    summary_user[pr.user.login]["deletions"] += pr.deletions
+
+        print(json.dumps({
+            "stats": stats,
+            "summary_user": summary_user,
+            "summary_repo": summary_repo
+        }))

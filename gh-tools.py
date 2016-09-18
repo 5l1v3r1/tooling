@@ -5,8 +5,8 @@ import click
 
 import os
 
-from gh_tools import label
-from gh_tools import issue
+from gh_tools import label, issue, stats
+
 
 EXCLUDE = ['napalm', 'napalm-salt', 'napalm-ansible', 'napalm-skeleton', 'iosxr-ez', 'tooling']
 
@@ -40,6 +40,7 @@ def cli(ctx, debug, organization, token, exclude):
 cli.add_command(label.label)
 cli.add_command(label.synch_labels)
 cli.add_command(issue.issue)
+cli.add_command(stats.stats)
 
 
 if __name__ == '__main__':
