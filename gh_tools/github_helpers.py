@@ -1,6 +1,5 @@
 """Some useful functions to deal with GitHub."""
 import datetime
-import json
 
 from github import Github
 from github import UnknownObjectException
@@ -279,7 +278,7 @@ class GitHubMux:
                                                              new_issue.url),
                             fg="yellow")
 
-    def stats(self, days):
+    def pr_stats(self, days):
         """Gather stats for the past few days."""
         stats = {}
         summary_user = {}
@@ -328,8 +327,24 @@ class GitHubMux:
                     summary_user[pr.user.login]["additions"] += pr.additions
                     summary_user[pr.user.login]["deletions"] += pr.deletions
 
-        print(json.dumps({
+        return {
             "stats": stats,
             "summary_user": summary_user,
             "summary_repo": summary_repo
-        }))
+        }
+
+    def issue_stats(self, days):
+        """Gather stats for the past few days."""
+        stats = {}
+
+        for repo in self.repos():
+            stats[repo.name] = {"count": 0}
+            for issue in repo.get_issues(state="closed", sort="updated", direction="desc"):
+                if issue.updated_at < (datetime.datetime.now() - datetime.timedelta(days=days)):
+                    break
+
+                stats[repo.name]["count"] += 1
+
+        return {
+            "stats": stats,
+        }
