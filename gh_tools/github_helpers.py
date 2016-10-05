@@ -11,7 +11,8 @@ class GitHubMux:
     """Class that let's you operate in multiple repos of the same org at the same time."""
 
     def __init__(self, organization, token, exclude):
-        """Instantiate class.
+        """
+        Instantiate class.
 
         Args:
             organization(string): Organization name.
@@ -202,13 +203,10 @@ class GitHubMux:
         query = "{} in:Title repo:{}/{}".format(title, org, repo)
         issues = self.gh.search_issues(query)
 
-        count = 0
-        i = None
         for i in issues:
-            if count:
-                raise Exception("Found too many issues, please make sure the title is unique")
-            count += 1
-        return i
+            if i.title == title:
+                return i
+        return None
 
     def move_issue(self, issue_id, src_repo, dst_repo):
         """
