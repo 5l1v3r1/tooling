@@ -8,7 +8,7 @@ import os
 from gh_tools import label, issue, stats
 
 
-EXCLUDE = ['napalm', 'napalm-salt', 'napalm-ansible', 'napalm-skeleton', 'iosxr-ez', 'tooling',
+EXCLUDE = ['brigade', 'napalm', 'napalm-salt', 'napalm-ansible', 'napalm-skeleton', 'iosxr-ez', 'tooling',
            'napalm-utils', 'napalm-yang', 'napalm-cookiecutter']
 
 
